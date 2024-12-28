@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DivinitySoftworks.AWS.Core.Web.Functions", "DivinitySoftworks.AWS.Core.Web.Functions\DivinitySoftworks.AWS.Core.Web.Functions.csproj", "{34949EC1-9E2E-48F0-A72B-8C3CE1845E9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DivinitySoftworks.AWS.Core.Data.DynamoDB", "DivinitySoftworks.AWS.Core.Data.DynamoDB\DivinitySoftworks.AWS.Core.Data.DynamoDB.csproj", "{4E5F58F7-BF49-4877-B4E6-134CA3F6374D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34949EC1-9E2E-48F0-A72B-8C3CE1845E9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34949EC1-9E2E-48F0-A72B-8C3CE1845E9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34949EC1-9E2E-48F0-A72B-8C3CE1845E9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34949EC1-9E2E-48F0-A72B-8C3CE1845E9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E5F58F7-BF49-4877-B4E6-134CA3F6374D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E5F58F7-BF49-4877-B4E6-134CA3F6374D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E5F58F7-BF49-4877-B4E6-134CA3F6374D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E5F58F7-BF49-4877-B4E6-134CA3F6374D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {914464B8-58E7-41F6-99FD-F2D9381D4EF0}
+	EndGlobalSection
+EndGlobal
