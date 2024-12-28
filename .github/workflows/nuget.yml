@@ -58,19 +58,22 @@ jobs:
     - name: 'Add NuGet Package Sources'
       run: |
         echo "Creating nuget.config with GitHub Packages Source"
-        echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>" > nuget.config
-        echo "<configuration>" >> nuget.config
-        echo "  <packageSources>" >> nuget.config
-        echo "    <add key=\"nuget.org\" value=\"https://api.nuget.org/v3/index.json\" protocolVersion=\"3\" />" >> nuget.config
-        echo "    <add key=\"Divinity Softworks - Packages\" value=\"https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json\" />" >> nuget.config
-        echo "  </packageSources>" >> nuget.config
-        echo "  <packageSourceCredentials>" >> nuget.config
-        echo "    <Divinity_x0020_Softworks_x0020_-_x0020_Packages>" >> nuget.config
-        echo "      <add key=\"Username\" value=\"${{ github.actor }}\" />" >> nuget.config
-        echo "      <add key=\"ClearTextPassword\" value=\"${{ secrets.GITHUB_TOKEN }}\" />" >> nuget.config
-        echo "    </Divinity_x0020_Softworks_x0020_-_x0020_Packages>" >> nuget.config
-        echo "  </packageSourceCredentials>" >> nuget.config
-        echo "</configuration>" >> nuget.config
+        cat > nuget.config <<EOL
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+            <add key="Divinity Softworks - Packages" value="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" />
+          </packageSources>
+          <packageSourceCredentials>
+            <Divinity_Softworks_Packages>
+              <add key="Username" value="${{ github.actor }}" />
+              <add key="ClearTextPassword" value="${{ secrets.GITHUB_TOKEN }}" />
+            </Divinity_Softworks_Packages>
+          </packageSourceCredentials>
+        </configuration>
+        EOL
+
 
     - name: 'Deploy Changed Projects'
       if: env.CHANGED_PROJECTS != ''
