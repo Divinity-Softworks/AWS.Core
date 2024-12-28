@@ -15,6 +15,7 @@ public static class ErrorResponseExtensions {
     /// <param name="errorResponse">The <see cref="ErrorResponse"/> object containing details about the error.</param>
     /// <returns>An <see cref="IHttpResult"/> that represents the appropriate HTTP response for the given error.</returns>
     public static IHttpResult ToHttpResult(this ErrorResponse errorResponse) {
+        // Return based on status code.
         return errorResponse.StatusCode switch {
             HttpStatusCode.BadRequest => BadRequest(errorResponse),
             HttpStatusCode.Unauthorized => NewResult(HttpStatusCode.Unauthorized, errorResponse),
