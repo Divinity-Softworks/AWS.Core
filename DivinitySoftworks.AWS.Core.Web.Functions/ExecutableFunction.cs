@@ -97,7 +97,7 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
         }
 
         if (httpResult is HttpResults httpResults)
-            httpResults.AddHeader("X-DS-Token", $"{Guid.NewGuid()}");
+            httpResults.AddHeader("X-DS-TOKEN", $"{Guid.NewGuid()}");
 
         return httpResult;
     }
