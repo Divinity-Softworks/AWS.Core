@@ -65,22 +65,15 @@ jobs:
             <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
             <add key="Divinity Softworks - Packages" value="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" />
           </packageSources>
-          <packageSourceCredentials>
-            <Divinity_x0020_Softworks_x0020_-_x0020_Packages>
-              <add key="Username" value="" />
-              <add key="ClearTextPassword" value="" />
-            </Divinity_x0020_Softworks_x0020_-_x0020_Packages>
-          </packageSourceCredentials>
         </configuration>
         EOF
-
 
     - name: 'Deploy Changed Projects'
       if: env.CHANGED_PROJECTS != ''
       env:
         CHANGED_PROJECTS: ${{ env.CHANGED_PROJECTS }}
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        NuGetPackageSourceCredentials_Divinity_x0020_Softworks_x0020_-_x0020_Packages: Username=${{ github.actor }};Password=${{ secrets.GITHUB_TOKEN }}
+        NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+        NUGET_USERNAME: ${{ github.actor }}
       run: |
         for project_file in $CHANGED_PROJECTS; do
           echo "Processing $project_file"
@@ -92,9 +85,9 @@ jobs:
           PACKAGE_VERSION=$(echo "$gitversion_output" | tr -d '\r')
           cd -
 
-          # Restore packages with the dynamic nuget.config file
-          dotnet restore "$project_file" --configfile nuget.config
-          
+          # Restore packages using nuget.config and environment variables for authentication
+          dotnet restore "$project_file" --configfile nuget.config --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+         
           # Build project
           dotnet build "$project_file" --no-restore --configuration Release
 
