@@ -1,0 +1,79 @@
+name: "Deploy to NuGet"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs: 
+  deploy:
+    name: 'Deploy'
+    runs-on: 'ubuntu-latest'
+
+    steps: 
+    - name: 'Checkout'
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 'Install .NET'
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.*'
+
+    - name: 'Install GitVersion'
+      uses: gittools/actions/gitversion/setup@v1.1.1
+      with:
+        versionSpec: '5.x'
+
+    - name: 'Add GitVersion Config File'
+      run: |
+        echo "Creating GitVersion.yml with GitVersion Configuration File"
+        cat <<EOF > GitVersion.yml
+        mode: Mainline
+        branches:
+          main:
+            regex: ^main$
+            source-branches: []
+            is-mainline: true
+        EOF
+
+    - name: 'Detect Changed Projects'
+      id: detect-changes
+      run: |
+        echo "Detecting changes for projects..."
+        echo "changed_projects=" > $GITHUB_ENV
+        for project in Project1 Project2 Project3; do
+          if git diff --quiet HEAD^ HEAD -- "$project/"; then
+            echo "No changes in $project"
+          else
+            echo "Changes detected in $project"
+            echo "$project" >> changed_projects.txt
+          fi
+        done
+
+    - name: 'Deploy Changed Projects'
+      if: steps.detect-changes.outputs.changed_projects != ''
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        while IFS= read -r project; do
+          echo "Processing $project"
+          
+          # Determine version for this project using GitVersion
+          project_path="${project}/${project}.csproj"
+          gitversion_output=$(gitversion /showvariable nugetVersionV2 /overrideprojectpath "$project_path")
+          PACKAGE_VERSION=$(echo "$gitversion_output" | tr -d '\r')
+
+          # Restore packages
+          dotnet restore "$project_path" --configfile nuget.config
+
+          # Build project
+          dotnet build "$project_path" --no-restore --configuration Release
+
+          # Pack project with version
+          dotnet pack "$project_path" -p:PackageVersion=$PACKAGE_VERSION --no-restore --no-build --configuration Release --output ./nupkg
+
+          # Publish package to NuGet
+          dotnet nuget push ./nupkg/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }}
+        done < changed_projects.txt
