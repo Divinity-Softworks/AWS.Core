@@ -55,6 +55,25 @@ jobs:
         done < all_projects.txt
         echo "CHANGED_PROJECTS=$CHANGED_PROJECTS" >> $GITHUB_ENV
 
+    - name: 'Create NuGet Config File'
+      run: |
+        echo "Creating nuget.config with GitHub Packages Source"
+        cat <<EOF > nuget.config
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+            <add key="Divinity Softworks - Packages" value="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" />
+          </packageSources>
+          <packageSourceCredentials>
+            <Divinity_x0020_Softworks_x0020_-_x0020_Packages>
+              <add key="Username" value="m.keeman@outlook.com" />
+              <add key="ClearTextPassword" value="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" />
+            </Divinity_x0020_Softworks_x0020_-_x0020_Packages>
+          </packageSourceCredentials>
+        </configuration>
+        EOF
+
     - name: 'Deploy Changed Projects'
       if: env.CHANGED_PROJECTS != ''
       env:
@@ -71,7 +90,7 @@ jobs:
           PACKAGE_VERSION=$(echo "$gitversion_output" | tr -d '\r')
           cd -
 
-          # Restore packages
+          # Restore packages with the dynamic nuget.config file
           dotnet restore "$project_file" --configfile nuget.config
 
           # Build project
@@ -81,5 +100,5 @@ jobs:
           dotnet pack "$project_file" -p:PackageVersion=$PACKAGE_VERSION --no-restore --no-build --configuration Release --output ./nupkg
 
           # Publish package to NuGet
-          dotnet nuget push ./nupkg/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key $NUGET_API_KEY
+          dotnet nuget push ./nupkg/*.nupkg --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key $NUGET_API_KEY
         done
