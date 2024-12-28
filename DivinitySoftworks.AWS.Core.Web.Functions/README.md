@@ -1,2 +1,2 @@
-# Core Web Functions - Divinity Softworks
-Core Web Functions Library for Divinity Softworks projects.
+# AWS | Core Web Functions Library - Divinity Softworks
+AWS | Core Web Functions Library for Divinity Softworks projects.
