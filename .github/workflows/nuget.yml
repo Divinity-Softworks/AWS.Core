@@ -42,37 +42,38 @@ jobs:
       id: detect-changes
       run: |
         echo "Detecting changes for projects..."
+        find . -name "*.csproj" > all_projects.txt
         echo "changed_projects=" > $GITHUB_ENV
-        for project in Project1 Project2 Project3; do
-          if git diff --quiet HEAD^ HEAD -- "$project/"; then
-            echo "No changes in $project"
+        while IFS= read -r project_file; do
+          project_dir=$(dirname "$project_file")
+          if git diff --quiet HEAD^ HEAD -- "$project_dir/"; then
+            echo "No changes in $project_dir"
           else
-            echo "Changes detected in $project"
-            echo "$project" >> changed_projects.txt
+            echo "Changes detected in $project_dir"
+            echo "$project_file" >> changed_projects.txt
           fi
-        done
+        done < all_projects.txt
 
     - name: 'Deploy Changed Projects'
       if: steps.detect-changes.outputs.changed_projects != ''
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        while IFS= read -r project; do
-          echo "Processing $project"
+        while IFS= read -r project_file; do
+          echo "Processing $project_file"
           
           # Determine version for this project using GitVersion
-          project_path="${project}/${project}.csproj"
-          gitversion_output=$(gitversion /showvariable nugetVersionV2 /overrideprojectpath "$project_path")
+          gitversion_output=$(gitversion /showvariable nugetVersionV2 /overrideprojectpath "$project_file")
           PACKAGE_VERSION=$(echo "$gitversion_output" | tr -d '\r')
 
           # Restore packages
-          dotnet restore "$project_path" --configfile nuget.config
+          dotnet restore "$project_file" --configfile nuget.config
 
           # Build project
-          dotnet build "$project_path" --no-restore --configuration Release
+          dotnet build "$project_file" --no-restore --configuration Release
 
           # Pack project with version
-          dotnet pack "$project_path" -p:PackageVersion=$PACKAGE_VERSION --no-restore --no-build --configuration Release --output ./nupkg
+          dotnet pack "$project_file" -p:PackageVersion=$PACKAGE_VERSION --no-restore --no-build --configuration Release --output ./nupkg
 
           # Publish package to NuGet
           dotnet nuget push ./nupkg/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }}
