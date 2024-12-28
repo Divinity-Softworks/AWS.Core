@@ -55,10 +55,10 @@ jobs:
         done < all_projects.txt
         echo "CHANGED_PROJECTS=$CHANGED_PROJECTS" >> $GITHUB_ENV
 
-    - name: 'Add NuGet Package Sources'
+    - name: 'Create NuGet Config File'
       run: |
         echo "Creating nuget.config with GitHub Packages Source"
-        cat > nuget.config <<EOL
+        cat <<EOF > nuget.config
         <?xml version="1.0" encoding="utf-8"?>
         <configuration>
           <packageSources>
@@ -66,13 +66,13 @@ jobs:
             <add key="Divinity Softworks - Packages" value="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" />
           </packageSources>
           <packageSourceCredentials>
-            <Divinity_Softworks_Packages>
-              <add key="Username" value="${{ github.actor }}" />
-              <add key="ClearTextPassword" value="${{ secrets.GITHUB_TOKEN }}" />
-            </Divinity_Softworks_Packages>
+            <Divinity_x0020_Softworks_x0020_-_x0020_Packages>
+              <add key="Username" value="" />
+              <add key="ClearTextPassword" value="" />
+            </Divinity_x0020_Softworks_x0020_-_x0020_Packages>
           </packageSourceCredentials>
         </configuration>
-        EOL
+        EOF
 
 
     - name: 'Deploy Changed Projects'
@@ -80,6 +80,7 @@ jobs:
       env:
         CHANGED_PROJECTS: ${{ env.CHANGED_PROJECTS }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        NuGetPackageSourceCredentials_Divinity_x0020_Softworks_x0020_-_x0020_Packages: Username=${{ github.actor }};Password=${{ secrets.GITHUB_TOKEN }}
       run: |
         for project_file in $CHANGED_PROJECTS; do
           echo "Processing $project_file"
@@ -93,7 +94,7 @@ jobs:
 
           # Restore packages with the dynamic nuget.config file
           dotnet restore "$project_file" --configfile nuget.config
-
+          
           # Build project
           dotnet build "$project_file" --no-restore --configuration Release
 
