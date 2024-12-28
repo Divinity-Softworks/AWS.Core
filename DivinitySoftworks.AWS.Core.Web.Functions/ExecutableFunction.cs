@@ -105,7 +105,7 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
     /// <summary>
     /// Creates an IHttpResult for a NoContent (204) status code.
     /// </summary>
-    /// <param name="body">Optional response body</param>
+    /// <param name="body">Optional response body.</param>
     protected static IHttpResult NoContent(object? body = null) {
         return NewResult(HttpStatusCode.NoContent, body);
     }
