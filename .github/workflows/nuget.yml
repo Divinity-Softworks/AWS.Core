@@ -43,23 +43,25 @@ jobs:
       run: |
         echo "Detecting changes for projects..."
         find . -name "*.csproj" > all_projects.txt
-        echo "changed_projects=" > $GITHUB_ENV
+        CHANGED_PROJECTS=""
         while IFS= read -r project_file; do
           project_dir=$(dirname "$project_file")
           if git diff --quiet HEAD^ HEAD -- "$project_dir/"; then
             echo "No changes in $project_dir"
           else
             echo "Changes detected in $project_dir"
-            echo "$project_file" >> changed_projects.txt
+            CHANGED_PROJECTS="$CHANGED_PROJECTS $project_file"
           fi
         done < all_projects.txt
+        echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_ENV
+        echo "::set-output name=changed_projects::$CHANGED_PROJECTS"
 
     - name: 'Deploy Changed Projects'
-      if: steps.detect-changes.outputs.changed_projects != ''
+      if: ${{ steps.detect-changes.outputs.changed_projects != '' }}
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        while IFS= read -r project_file; do
+        for project_file in ${{ steps.detect-changes.outputs.changed_projects }}; do
           echo "Processing $project_file"
           
           # Determine version for this project using GitVersion
@@ -77,4 +79,4 @@ jobs:
 
           # Publish package to NuGet
           dotnet nuget push ./nupkg/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }}
-        done < changed_projects.txt
+        done
