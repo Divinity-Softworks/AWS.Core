@@ -22,6 +22,7 @@ public static class ErrorResponseExtensions {
             HttpStatusCode.NotFound => NotFound(errorResponse),
             HttpStatusCode.InternalServerError => InternalServerError(errorResponse),
             HttpStatusCode.ServiceUnavailable => NewResult(HttpStatusCode.ServiceUnavailable, errorResponse),
+            // Default.
             _ => NewResult(errorResponse.StatusCode, errorResponse)
         };
     }
