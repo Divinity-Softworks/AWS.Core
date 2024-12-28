@@ -65,7 +65,7 @@ jobs:
           echo "Processing $project_file"
           
           # Determine version for this project using GitVersion
-          gitversion_output=$(gitversion /showvariable nugetVersionV2 /overrideprojectpath "$project_file")
+          gitversion_output=$(dotnet-gitversion /showvariable nugetVersionV2 /overrideprojectpath "$project_file")
           PACKAGE_VERSION=$(echo "$gitversion_output" | tr -d '\r')
 
           # Restore packages
