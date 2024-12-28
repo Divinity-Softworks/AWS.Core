@@ -63,10 +63,13 @@ jobs:
       run: |
         for project_file in $CHANGED_PROJECTS; do
           echo "Processing $project_file"
+          project_dir=$(dirname "$project_file")
           
           # Determine version for this project using GitVersion
-          gitversion_output=$(dotnet-gitversion /showvariable nugetVersionV2 /overrideprojectpath "$project_file")
+          cd "$project_dir"
+          gitversion_output=$(dotnet-gitversion /showvariable nugetVersionV2)
           PACKAGE_VERSION=$(echo "$gitversion_output" | tr -d '\r')
+          cd -
 
           # Restore packages
           dotnet restore "$project_file" --configfile nuget.config
