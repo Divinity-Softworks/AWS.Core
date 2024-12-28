@@ -53,15 +53,15 @@ jobs:
             CHANGED_PROJECTS="$CHANGED_PROJECTS $project_file"
           fi
         done < all_projects.txt
-        echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_ENV
-        echo "::set-output name=changed_projects::$CHANGED_PROJECTS"
+        echo "CHANGED_PROJECTS=$CHANGED_PROJECTS" >> $GITHUB_ENV
 
     - name: 'Deploy Changed Projects'
-      if: ${{ steps.detect-changes.outputs.changed_projects != '' }}
+      if: env.CHANGED_PROJECTS != ''
       env:
+        CHANGED_PROJECTS: ${{ env.CHANGED_PROJECTS }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        for project_file in ${{ steps.detect-changes.outputs.changed_projects }}; do
+        for project_file in $CHANGED_PROJECTS; do
           echo "Processing $project_file"
           
           # Determine version for this project using GitVersion
@@ -78,5 +78,5 @@ jobs:
           dotnet pack "$project_file" -p:PackageVersion=$PACKAGE_VERSION --no-restore --no-build --configuration Release --output ./nupkg
 
           # Publish package to NuGet
-          dotnet nuget push ./nupkg/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push ./nupkg/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key $NUGET_API_KEY
         done
