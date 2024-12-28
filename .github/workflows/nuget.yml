@@ -99,5 +99,5 @@ jobs:
           dotnet pack "$project_file" -p:PackageVersion=$PACKAGE_VERSION --no-restore --no-build --configuration Release --output ./nupkg
 
           # Publish package to NuGet
-          dotnet nuget push ./nupkg/*.nupkg --source "Divinity Softworks - Packages" --api-key ${{ secrets.GITHUB_TOKEN }}
+          dotnet nuget push ./nupkg/*.nupkg --source "Divinity Softworks - Packages" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
         done
