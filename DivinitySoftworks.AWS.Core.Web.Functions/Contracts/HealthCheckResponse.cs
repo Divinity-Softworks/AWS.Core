@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace DivinitySoftworks.Core.Web.Functions.Contracts;
+namespace DivinitySoftworks.AWS.Core.Web.Functions.Contracts;
 
 /// <summary>
 /// Represents the response returned by the health check function.

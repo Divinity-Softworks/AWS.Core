@@ -7,7 +7,7 @@ using System.Net;
 
 using static Amazon.Lambda.Annotations.APIGateway.HttpResults;
 
-namespace DivinitySoftworks.Core.Web.Functions.Functions;
+namespace DivinitySoftworks.AWS.Core.Web.Functions;
 
 /// <summary>
 /// Provides a base class for executable functions with authorization handling.
