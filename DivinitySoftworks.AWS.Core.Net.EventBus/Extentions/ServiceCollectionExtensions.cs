@@ -1,6 +1,8 @@
 ﻿using Amazon;
 using Amazon.SimpleNotificationService;
+using DivinitySoftworks.AWS.Core.Net.EventBus;
 using DivinitySoftworks.AWS.Core.Net.EventBus.Settings;
+using DivinitySoftworks.Core.Net.EventBus;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -22,8 +24,9 @@ public static class ServiceCollectionExtensions {
             .Get<SimpleNotificationServiceSettings>()
             ?? throw new InvalidOperationException("Simple Notification Service settings are missing.");
 
-        services.AddSingleton<IAmazonSimpleNotificationService>(
-            new AmazonSimpleNotificationServiceClient(simpleNotificationServiceSettings.Region.ToRegionEndpoint()));
+        IAmazonSimpleNotificationService amazonSimpleNotificationService = new AmazonSimpleNotificationServiceClient(simpleNotificationServiceSettings.Region.ToRegionEndpoint());
+
+        services.AddSingleton<IPublisher>(new PublisherService(amazonSimpleNotificationService));
 
         return services;
     }
