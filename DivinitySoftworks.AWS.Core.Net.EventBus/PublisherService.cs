@@ -32,7 +32,7 @@ public sealed class PublisherService(IAmazonSimpleNotificationService amazonSimp
     public async Task<R?> PublishAsync<T, R>(string busName, T message) {
         PublishRequest request = new() {
             TopicArn = busName,
-            Message = JsonSerializer.Serialize(message)
+            Message = message is string ? message as string : JsonSerializer.Serialize(message)
         };
 
         // Publish the message to SNS and await the response
