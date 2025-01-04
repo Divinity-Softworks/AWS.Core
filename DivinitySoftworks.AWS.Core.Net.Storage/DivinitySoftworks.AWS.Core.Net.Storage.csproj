@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>Divinity Softworks | AWS - Core Net Storage Library</Title>
+		<Authors>Divinity Softworks</Authors>
+		<RepositoryUrl>https://github.com/Divinity-Softworks/AWS.Core</RepositoryUrl>
+		<Description>AWS | Core Net Storage Library for Divinity Softworks projects.</Description>
+		<PackageDescription>AWS | Core Net Storage Library for Divinity Softworks projects.</PackageDescription>
+		<Version>$(VersionPrefix)</Version>
+		<AssemblyVersion>1.0</AssemblyVersion>
+		<FileVersion>1.0.0</FileVersion>
+		<PackageId>$(MSBuildProjectName)</PackageId>
+		<Copyright>$(Authors)</Copyright>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Amazon.Lambda.Core" Version="2.5.0" />
+		<PackageReference Include="AWSSDK.S3" Version="3.7.410.13" />
+		<PackageReference Include="DivinitySoftworks.AWS.Core" Version="0.1.40" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+	</ItemGroup>
+
+</Project>

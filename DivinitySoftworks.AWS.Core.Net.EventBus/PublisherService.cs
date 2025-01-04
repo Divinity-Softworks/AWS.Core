@@ -12,8 +12,9 @@ namespace DivinitySoftworks.AWS.Core.Net.EventBus;
 /// Initializes a new instance of the <see cref="PublisherService"/> class.
 /// </remarks>
 /// <param name="amazonSimpleNotificationService">The <see cref="IAmazonSimpleNotificationService"/> client for interacting with SNS.</param>
-public sealed class PublisherService(IAmazonSimpleNotificationService amazonSimpleNotificationService) : IPublisher {
-    private readonly IAmazonSimpleNotificationService _amazonSimpleNotificationService = amazonSimpleNotificationService;
+public sealed class PublisherService(IAmazonSimpleNotificationService amazonSimpleNotificationService) : IPublisher, IDisposable {
+    readonly IAmazonSimpleNotificationService _amazonSimpleNotificationService = amazonSimpleNotificationService;
+    bool _disposed;
 
     /// <inheritdoc/>
     /// <summary>
@@ -34,11 +35,29 @@ public sealed class PublisherService(IAmazonSimpleNotificationService amazonSimp
             TopicArn = busName,
             Message = message is string ? message as string : JsonSerializer.Serialize(message)
         };
-
+        
         // Publish the message to SNS and await the response
         PublishResponse publishResponse = await _amazonSimpleNotificationService.PublishAsync(request);
 
         // Deserialize the response into the expected result type
         return JsonSerializer.Deserialize<R>(JsonSerializer.Serialize(publishResponse));
+    }
+
+    /// <summary>
+    /// Releases the resources used by the PublisherService.
+    /// </summary>
+    private void Dispose(bool disposing) {
+        if (!_disposed) {
+            if (disposing) 
+                _amazonSimpleNotificationService?.Dispose();
+
+            _disposed = true;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose() {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

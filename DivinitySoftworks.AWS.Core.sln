@@ -7,9 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DivinitySoftworks.AWS.Core.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DivinitySoftworks.AWS.Core.Data.DynamoDB", "DivinitySoftworks.AWS.Core.Data.DynamoDB\DivinitySoftworks.AWS.Core.Data.DynamoDB.csproj", "{4E5F58F7-BF49-4877-B4E6-134CA3F6374D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DivinitySoftworks.AWS.Core.Net.EventBus", "DivinitySoftworks.AWS.Core.Net.EventBus\DivinitySoftworks.AWS.Core.Net.EventBus.csproj", "{DF24D2B7-18DC-402B-828E-08DFDC8B03E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DivinitySoftworks.AWS.Core.Net.EventBus", "DivinitySoftworks.AWS.Core.Net.EventBus\DivinitySoftworks.AWS.Core.Net.EventBus.csproj", "{DF24D2B7-18DC-402B-828E-08DFDC8B03E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DivinitySoftworks.AWS.Core", "DivinitySoftworks.AWS.Core\DivinitySoftworks.AWS.Core.csproj", "{29709BFB-48AA-4EC5-906E-22098CEF3D9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DivinitySoftworks.AWS.Core", "DivinitySoftworks.AWS.Core\DivinitySoftworks.AWS.Core.csproj", "{29709BFB-48AA-4EC5-906E-22098CEF3D9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DivinitySoftworks.AWS.Core.Net", "DivinitySoftworks.AWS.Core.Net\DivinitySoftworks.AWS.Core.Net.csproj", "{1EBEF99A-50D6-4A8D-93D5-9AE6CB541C21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DivinitySoftworks.AWS.Core.Net.Storage", "DivinitySoftworks.AWS.Core.Net.Storage\DivinitySoftworks.AWS.Core.Net.Storage.csproj", "{5AA1E7E1-E18D-4A99-A8C1-392315436A2F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{29709BFB-48AA-4EC5-906E-22098CEF3D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29709BFB-48AA-4EC5-906E-22098CEF3D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29709BFB-48AA-4EC5-906E-22098CEF3D9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EBEF99A-50D6-4A8D-93D5-9AE6CB541C21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EBEF99A-50D6-4A8D-93D5-9AE6CB541C21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EBEF99A-50D6-4A8D-93D5-9AE6CB541C21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EBEF99A-50D6-4A8D-93D5-9AE6CB541C21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AA1E7E1-E18D-4A99-A8C1-392315436A2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AA1E7E1-E18D-4A99-A8C1-392315436A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AA1E7E1-E18D-4A99-A8C1-392315436A2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AA1E7E1-E18D-4A99-A8C1-392315436A2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
