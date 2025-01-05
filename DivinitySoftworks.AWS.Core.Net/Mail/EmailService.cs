@@ -23,7 +23,7 @@ public interface IEmailService {
     /// <param name="loadFileAsync">A function to asynchronously load email template files, taking the file path and AWS Lambda context as input.</param>
     /// <param name="context">The AWS Lambda context providing logging and execution details.</param>
     /// <returns>A <see cref="SendEmailResponse"/> object containing the response details, or null if sending fails.</returns>
-    Task<SendEmailResponse?> SendAsync(EmailTemplateMessage emailTemplateMessage, Func<string, ILambdaContext, Task<string>> loadFileAsync, ILambdaContext context);
+    Task<SendEmailResponse> SendAsync(EmailTemplateMessage emailTemplateMessage, Func<string, ILambdaContext, Task<string>> loadFileAsync, ILambdaContext context);
 }
 
 /// <summary>
@@ -65,7 +65,7 @@ public sealed class EmailService(IAmazonSimpleEmailService amazonSimpleEmailServ
     }
 
     /// <inheritdoc/>
-    public async Task<SendEmailResponse?> SendAsync(EmailTemplateMessage emailTemplateMessage, Func<string, ILambdaContext, Task<string>> loadFileAsync, ILambdaContext context) {
+    public async Task<SendEmailResponse> SendAsync(EmailTemplateMessage emailTemplateMessage, Func<string, ILambdaContext, Task<string>> loadFileAsync, ILambdaContext context) {
         string htmlBody = await loadFileAsync($"{emailTemplateMessage.Template}.html", context);
         string textBody = await loadFileAsync($"{emailTemplateMessage.Template}.txt", context);
 
