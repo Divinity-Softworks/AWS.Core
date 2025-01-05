@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Provides extension methods for configuring AWS Simple Notification Service (SNS) in an <see cref="IServiceCollection" />.
+/// Provides extension methods for configuring AWS Simple Email Service (SES) in an <see cref="IServiceCollection" />.
 /// </summary>
 public static class ServiceCollectionExtensions {
     /// <summary>
@@ -17,13 +17,13 @@ public static class ServiceCollectionExtensions {
     /// <param name="configuration">The application's configuration from which the SES settings will be retrieved.</param>
     /// <returns>The updated <see cref="IServiceCollection"/> instance.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the SES settings are missing or invalid in the configuration.</exception>
-    public static IServiceCollection AddSimpleNotificationService(this IServiceCollection services, IConfiguration configuration) {
-        SimpleEmailServiceSettings? simpleNotificationServiceSettings = configuration
+    public static IServiceCollection AddSimpleEmailService(this IServiceCollection services, IConfiguration configuration) {
+        SimpleEmailServiceSettings? simpleEmailServiceSettings = configuration
             .GetSection(SimpleEmailServiceSettings.KeyName)
             .Get<SimpleEmailServiceSettings>()
             ?? throw new InvalidOperationException("Simple Email Service settings are missing.");
 
-        IAmazonSimpleEmailService amazonSimpleEmailService = new AmazonSimpleEmailServiceClient(simpleNotificationServiceSettings.Region.ToRegionEndpoint());
+        IAmazonSimpleEmailService amazonSimpleEmailService = new AmazonSimpleEmailServiceClient(simpleEmailServiceSettings.Region.ToRegionEndpoint());
 
         services.AddSingleton<IEmailService>(new EmailService(amazonSimpleEmailService));
 
