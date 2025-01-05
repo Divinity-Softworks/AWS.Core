@@ -1,10 +1,10 @@
 ﻿using Amazon;
 using Amazon.S3;
+using DivinitySoftworks.AWS.Core.Net.Storage;
 using DivinitySoftworks.AWS.Core.Net.Storage.Settings;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace DivinitySoftworks.AWS.Core.Net.Storage.Extensions; 
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Provides extension methods for registering S3 bucket services in the DI container.
