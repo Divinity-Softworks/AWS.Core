@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// <summary>
 /// Provides extension methods for registering S3 bucket services in the DI container.
 /// </summary>
-internal static class ServiceCollectionExtensions {
+public static class ServiceCollectionExtensions {
     /// <summary>
     /// Adds the S3 bucket service to the dependency injection container.
     /// </summary>
