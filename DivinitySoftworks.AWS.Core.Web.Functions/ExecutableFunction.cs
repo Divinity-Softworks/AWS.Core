@@ -3,6 +3,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using DivinitySoftworks.Core.Web.Errors;
 using DivinitySoftworks.Core.Web.Security;
+using Microsoft.Extensions.Logging;
 using System.Net;
 
 using static Amazon.Lambda.Annotations.APIGateway.HttpResults;
@@ -16,8 +17,10 @@ namespace DivinitySoftworks.AWS.Core.Web.Functions;
 /// Initializes a new instance of the <see cref="ExecutableFunction"/> class.
 /// </remarks>
 /// <param name="authorizeService">The service used to handle authorization.</param>
-public class ExecutableFunction(IAuthorizeService authorizeService) {
+/// <param name="logger">The logger for capturing logs.</param>
+public class ExecutableFunction(IAuthorizeService authorizeService, ILogger logger) {
     protected readonly IAuthorizeService _authorizeService = authorizeService;
+    protected readonly ILogger _logger = logger;
 
     /// <summary>
     /// Asynchronously authorizes a request based on the provided bearer token.
@@ -41,20 +44,20 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
     /// If authorization is required and the provided API key does not match the key in the request, an error is logged and the function does not execute.
     /// If an exception is thrown during the execution of the function, an error message is logged.
     /// </remarks>
-    public static async Task ExecuteAsync(Authorize authorize, ILambdaContext context, string apiKey, IApiKey input, Func<Task> function) {
+    public async Task ExecuteAsync(Authorize authorize, ILambdaContext context, string apiKey, IApiKey input, Func<Task> function) {
         try {
             if (authorize == Authorize.Unknown)
                 throw new Exception("The authorize type is unknown.");
 
             if (authorize == Authorize.Required && apiKey != input.Value) {
-                context.Logger.LogError($"The API Key is invalid.");
+                _logger.LogError($"The API Key is invalid.");
                 return;
             }
 
             await function();
         }
         catch (Exception exception) {
-            context.Logger.LogError(exception.Message);
+            _logger.LogError(exception, "Exception thrown while executing the function: {Message}", exception.Message);
         }
     }
 
@@ -75,29 +78,35 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
     public async Task<IHttpResult> ExecuteAsync(Authorize authorize, ILambdaContext context, APIGatewayHttpApiV2ProxyRequest request, Func<Task<IHttpResult>> function) {
         IHttpResult? httpResult = null;
         try {
+            LogRequestDetails(request, context);
+
             if (authorize == Authorize.Unknown)
                 throw new Exception("The authorize type is unknown.");
 
             if (authorize == Authorize.Required) {
                 // Headers are lowercase.
-                if (!request.Headers.TryGetValue("authorization", out string? authorizationHeader))
+                if (!request.Headers.TryGetValue("authorization", out string? authorizationHeader)) {
+                    _logger.LogWarning("Authorization header is missing.");
                     authorizationHeader = string.Empty;
+                }
 
                 AuthorizeResult authorizeResult = await AuthorizeAsync(authorizationHeader);
 
-                if (authorizeResult.StatusCode != HttpStatusCode.OK && authorizeResult.StatusCode != HttpStatusCode.Continue)
+                if (authorizeResult.StatusCode != HttpStatusCode.OK && authorizeResult.StatusCode != HttpStatusCode.Continue) {
+                    _logger.LogWarning("Authorization failed: {Error}: {ErrorMessage}", authorizeResult.Error, authorizeResult.ErrorMessage);
                     httpResult = new ErrorResponse(authorizeResult.StatusCode ?? HttpStatusCode.InternalServerError, authorizeResult.Error, authorizeResult.ErrorMessage).ToHttpResult();
+                }
             }
 
             httpResult ??= await function();
         }
         catch (Exception exception) {
-            context.Logger.LogError(exception.Message);
+            _logger.LogError(exception, "Exception thrown while executing the function: {Message}", exception.Message);
             httpResult = new ErrorResponse(exception).ToHttpResult();
         }
 
         if (httpResult is HttpResults httpResults)
-            httpResults.AddHeader("X-DS-TOKEN", $"{Guid.NewGuid()}");
+            httpResults.AddHeader("x-ds-token", $"{Guid.NewGuid()}");
 
         return httpResult;
     }
@@ -108,5 +117,17 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
     /// <param name="body">Optional response body.</param>
     protected static IHttpResult NoContent(object? body = null) {
         return NewResult(HttpStatusCode.NoContent, body);
+    }
+
+    /// <summary>
+    /// Logs request details for debugging or monitoring purposes.
+    /// </summary>
+    /// <param name="request">The API Gateway request object.</param>
+    /// <param name="context">The Lambda context.</param>
+    private void LogRequestDetails(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context) {
+        _logger.LogInformation("Processing request: {Path}, RequestId: {RequestId}", request.RawPath, context.AwsRequestId);
+
+        foreach (KeyValuePair<string, string> header in request.Headers) 
+            _logger.LogDebug("Header: {Key} = {Value}", header.Key, header.Value);
     }
 }
