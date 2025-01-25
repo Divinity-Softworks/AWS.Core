@@ -17,10 +17,8 @@ namespace DivinitySoftworks.AWS.Core.Web.Functions;
 /// Initializes a new instance of the <see cref="ExecutableFunction"/> class.
 /// </remarks>
 /// <param name="authorizeService">The service used to handle authorization.</param>
-/// <param name="logger">The logger for capturing logs.</param>
-public class ExecutableFunction(IAuthorizeService authorizeService, ILogger logger) {
+public class ExecutableFunction(IAuthorizeService authorizeService) {
     protected readonly IAuthorizeService _authorizeService = authorizeService;
-    protected readonly ILogger _logger = logger;
 
     /// <summary>
     /// Asynchronously authorizes a request based on the provided bearer token.
@@ -50,14 +48,14 @@ public class ExecutableFunction(IAuthorizeService authorizeService, ILogger logg
                 throw new Exception("The authorize type is unknown.");
 
             if (authorize == Authorize.Required && apiKey != input.Value) {
-                _logger.LogError($"The API Key is invalid.");
+                context.Logger.LogError($"The API Key is invalid.");
                 return;
             }
 
             await function();
         }
         catch (Exception exception) {
-            _logger.LogError(exception, "Exception thrown while executing the function: {Message}", exception.Message);
+            context.Logger.LogError(exception, "Exception thrown while executing the function: {Message}", exception.Message);
         }
     }
 
@@ -86,14 +84,14 @@ public class ExecutableFunction(IAuthorizeService authorizeService, ILogger logg
             if (authorize == Authorize.Required) {
                 // Headers are lowercase.
                 if (!request.Headers.TryGetValue("authorization", out string? authorizationHeader)) {
-                    _logger.LogWarning("Authorization header is missing.");
+                    context.Logger.LogWarning("Authorization header is missing.");
                     authorizationHeader = string.Empty;
                 }
 
                 AuthorizeResult authorizeResult = await AuthorizeAsync(authorizationHeader);
 
                 if (authorizeResult.StatusCode != HttpStatusCode.OK && authorizeResult.StatusCode != HttpStatusCode.Continue) {
-                    _logger.LogWarning("Authorization failed: {Error}: {ErrorMessage}", authorizeResult.Error, authorizeResult.ErrorMessage);
+                    context.Logger.LogWarning("Authorization failed: {Error}: {ErrorMessage}", authorizeResult.Error, authorizeResult.ErrorMessage);
                     httpResult = new ErrorResponse(authorizeResult.StatusCode ?? HttpStatusCode.InternalServerError, authorizeResult.Error, authorizeResult.ErrorMessage).ToHttpResult();
                 }
             }
@@ -101,7 +99,7 @@ public class ExecutableFunction(IAuthorizeService authorizeService, ILogger logg
             httpResult ??= await function();
         }
         catch (Exception exception) {
-            _logger.LogError(exception, "Exception thrown while executing the function: {Message}", exception.Message);
+            context.Logger.LogError(exception, "Exception thrown while executing the function: {Message}", exception.Message);
             httpResult = new ErrorResponse(exception).ToHttpResult();
         }
 
@@ -125,9 +123,9 @@ public class ExecutableFunction(IAuthorizeService authorizeService, ILogger logg
     /// <param name="request">The API Gateway request object.</param>
     /// <param name="context">The Lambda context.</param>
     private void LogRequestDetails(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context) {
-        _logger.LogInformation("Processing request: {Path}, RequestId: {RequestId}", request.RawPath, context.AwsRequestId);
+        context.Logger.LogInformation("Processing request: {Path}, RequestId: {RequestId}", request.RawPath, context.AwsRequestId);
 
-        foreach (KeyValuePair<string, string> header in request.Headers) 
-            _logger.LogDebug("Header: {Key} = {Value}", header.Key, header.Value);
+        foreach (KeyValuePair<string, string> header in request.Headers)
+            context.Logger.LogDebug("Header: {Key} = {Value}", header.Key, header.Value);
     }
 }
