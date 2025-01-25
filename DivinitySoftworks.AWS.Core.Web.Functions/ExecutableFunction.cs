@@ -110,11 +110,32 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
     }
 
     /// <summary>
-    /// Creates an IHttpResult for a NoContent (204) status code.
+    /// Creates an <see cref="IHttpResult"/> representing a No Content (204) status code response.
     /// </summary>
-    /// <param name="body">Optional response body.</param>
+    /// <param name="body">
+    /// An optional response body. While the HTTP 204 status code typically indicates no content, 
+    /// a body can still be included depending on the API design. If not provided, the response 
+    /// will have no additional body content.
+    /// </param>
+    /// <returns>
+    /// An <see cref="IHttpResult"/> with a status code of <see cref="HttpStatusCode.NoContent"/>.
+    /// </returns>
     protected static IHttpResult NoContent(object? body = null) {
         return NewResult(HttpStatusCode.NoContent, body);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="IHttpResult"/> representing an Unauthorized (401) status code response.
+    /// </summary>
+    /// <param name="body">
+    /// An optional response body containing additional details about the unauthorized error. 
+    /// If not provided, the response will contain no additional body content.
+    /// </param>
+    /// <returns>
+    /// An <see cref="IHttpResult"/> with a status code of <see cref="HttpStatusCode.Unauthorized"/>.
+    /// </returns>
+    protected static IHttpResult Unauthorized(object? body = null) {
+        return NewResult(HttpStatusCode.Unauthorized, body);
     }
 
     /// <summary>

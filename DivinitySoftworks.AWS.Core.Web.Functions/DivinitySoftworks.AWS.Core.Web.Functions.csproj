@@ -15,6 +15,7 @@
 		<FileVersion>1.0.0</FileVersion>
 		<PackageId>$(MSBuildProjectName)</PackageId>
 		<Copyright>$(Authors)</Copyright>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
