@@ -5,7 +5,7 @@ using DivinitySoftworks.Core.Web.Errors;
 using DivinitySoftworks.Core.Web.Security;
 using Microsoft.Extensions.Logging;
 using System.Net;
-
+using System.Reflection.Metadata.Ecma335;
 using static Amazon.Lambda.Annotations.APIGateway.HttpResults;
 
 namespace DivinitySoftworks.AWS.Core.Web.Functions;
@@ -143,8 +143,11 @@ public class ExecutableFunction(IAuthorizeService authorizeService) {
     /// </summary>
     /// <param name="request">The API Gateway request object.</param>
     /// <param name="context">The Lambda context.</param>
-    private void LogRequestDetails(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context) {
+    private static void LogRequestDetails(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context) {
         context.Logger.LogInformation("Processing request: {Path}, RequestId: {RequestId}", request.RawPath, context.AwsRequestId);
+
+        if (request is null || request.Headers is null) 
+            return;
 
         foreach (KeyValuePair<string, string> header in request.Headers)
             context.Logger.LogDebug("Header: {Key} = {Value}", header.Key, header.Value);
